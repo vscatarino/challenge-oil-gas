@@ -1,0 +1,19 @@
+# Arquivos gerados pelo npm
+node_modules/
+
+# Arquivo de log do npm
+npm-debug.log
+
+# Arquivos de log do yarn
+yarn-debug.log
+yarn-error.log
+
+
+# Diretório de compilação
+dist/
+
+# Arquivos de ambiente local
+.env
+
+# Arquivos de build
+build/

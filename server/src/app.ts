@@ -1,4 +1,3 @@
-// Import the 'express' module
 import express, { Request, Response } from 'express';
 
 import { Equipment } from './model/Equipment';
@@ -9,20 +8,11 @@ import fs from 'fs';
 import { Period, PeriodType } from './model/Period';
 
 
-// Create an Express application
 const app = express();
 const upload = multer({ dest: 'uploads/' });
-
-// Set the port number for the server
 const port = 8080;
 
 app.use(express.json());
-
-// Define a route for the root path ('/')
-app.get('/', (req, res) => {
-    // Send a response to the client
-    res.send('Hello, TypeScript + Node.js + Express!');
-});
 
 app.get('/equipments', async (req: Request, res: Response) => {
     let { period } = req.query
@@ -30,24 +20,32 @@ app.get('/equipments', async (req: Request, res: Response) => {
         period = period.toUpperCase()
         const equipmentService = container.getEquipmentService()
         const resp = await (await equipmentService).findEquipmentsByPeriod(period as PeriodType)
-        // console.log("Resp", resp)
         return res.status(200).json(resp);
     }
     return res.status(400).send('Invalid period parameter.');
 });
 
 app.post('/equipments', async (req: Request, res: Response) => {
-    // deve salvar os equipments no banco 
     const { equipmentId, timestamp, value } = req.body;
+    if (!equipmentId) {
+        return res.status(400).send('equipmentId is a required attribute in the body.');
+    }
+
+    if (!timestamp) {
+        return res.status(400).send('timestamp is a required attribute in the body.');
+    }
+
+    if (!value) {
+        return res.status(400).send('value is a required attribute in the body.');
+    }
+
     const equipment: Equipment = {
         equipmentId,
         timestamp: new Date(timestamp),
         value
     }
-    console.log("EQUIPMENT: ", equipment)
     const equipmentService = container.getEquipmentService()
     const resp = await (await equipmentService).create(equipment)
-    console.log("RESP TO USER: ", resp)
     res.setHeader('Content-Type', 'application/json; charset=utf-8')
     res.status(201)
     res.status(201).json(resp)
@@ -55,11 +53,11 @@ app.post('/equipments', async (req: Request, res: Response) => {
 
 app.post('/equipments/csv', upload.single('csvFile'), async (req: any, res: Response) => {
     if (!req.file) {
-        return res.status(400).json({ error: "Nenhum arquivo enviado." })
+        return res.status(400).json({ error: "No file uploaded." })
     }
 
     if (!req.file.mimetype.includes('csv')) {
-        return res.status(400).json({ error: "O arquivo enviado não é um CSV." })
+        return res.status(400).json({ error: "The file uploaded is not a CSV." })
     }
 
     const results: Equipment[] = []
@@ -79,8 +77,6 @@ app.post('/equipments/csv', upload.single('csvFile'), async (req: any, res: Resp
         })
 });
 
-// Start the server and listen on the specified port
 app.listen(port, () => {
-    // Log a message when the server is successfully running
     console.log(`Server is running on http://localhost:${port}`);
 });

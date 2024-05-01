@@ -1,3 +1,4 @@
+import { ApiError } from "../model/ApiError";
 import { Equipment } from "../model/Equipment";
 import { Period, PeriodType } from "../model/Period";
 import { EquipmentRepository } from "../repository/EquipmentRepository";
@@ -9,27 +10,37 @@ export default class EquipmentService {
     }
 
     async create(equipment: Equipment) {
-        console.log("criando o Equipamento: ", equipment)
-        const device: Equipment = await this.equipmentRepository.create(equipment)
-        console.log("equioamento criado: ", device)
-        return device
+        try {
+            const device: Equipment = await this.equipmentRepository.create(equipment)
+            return device
+        } catch (e) {
+            console.error("Error: ", e)
+            throw new ApiError("InternalServerError", 500, "Failed to save equipment to the database.")
+        }
+
     }
 
     async createMany(equipments: Equipment[]) {
-        console.log("criando o Equipamentos: ", equipments)
-        const devices: Equipment[] = await this.equipmentRepository.createMany(equipments)
-        console.log("Equipamentos criados: ", devices)
-        return devices
+        try {
+            const devices: Equipment[] = await this.equipmentRepository.createMany(equipments)
+            return devices
+        } catch (e) {
+            console.error("Error: ", e)
+            throw new ApiError("InternalServerError", 500, "Failed to save equipment list to the database.")
+        }
     }
 
     async findEquipmentsByPeriod(period: PeriodType) {
-        console.log("Search equipment bay period of: ", period)
-        const hours = this.convertPeriodToHours()[period]
-        console.log("Hours: ", hours)
-        const dateISO = this.getDataIso(hours)
-        console.log("iso: ", dateISO)
-        const equipmentList = await this.equipmentRepository.findEquipamentsByPeriod(dateISO)
-        return equipmentList
+        try {
+            const hours = this.convertPeriodToHours()[period]
+            const dateISO = this.getDataIso(hours)
+            const equipmentList = await this.equipmentRepository.findEquipamentsByPeriod(dateISO)
+            return equipmentList
+        } catch (e) {
+            console.error("Error: ", e)
+            throw new ApiError("InternalServerError", 500, "Failed to find equipment on the database.")
+        }
+
     }
 
     private convertPeriodToHours() {

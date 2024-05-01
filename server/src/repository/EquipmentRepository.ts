@@ -18,6 +18,7 @@ export class EquipmentRepository {
         equipment.id = randomUUID()
         await collection.insertOne(equipment)
         return equipment
+
     }
 
     async createMany(equipments: Equipment[]) {
@@ -46,17 +47,13 @@ export class EquipmentRepository {
             {
                 $group: {
                     _id: "$equipmentId",
-                    media: { $avg: "$value" }
+                    media: { $round: [{ $avg: "$value" }, 2] }
                 }
             }
         ]
 
         const collection = await this.getCollection()
         const list = await collection.aggregate(pipeline).toArray()
-        console.log("List: ", list)
         return list
-
-        // const list = await collection.find({ timestamp: { $gte: new Date(dateISO) } }).toArray()
-        // return list
     }
 }

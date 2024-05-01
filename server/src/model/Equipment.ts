@@ -1,6 +1,6 @@
 export interface Equipment {
     id?: string
     equipmentId: string
-    timestamp: string
+    timestamp: Date
     value: number
 }

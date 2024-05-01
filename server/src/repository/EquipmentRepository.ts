@@ -30,4 +30,11 @@ export class EquipmentRepository {
         await collection.insertMany(equipmentList)
         return equipmentList
     }
+
+    async findEquipamentsByPeriod(dateISO: string) {
+        const collection = await this.getCollection()
+        const list = await collection.find({ timestamp: { $gte: new Date(dateISO) } }).toArray()
+        console.log("List: ", list)
+        return list
+    }
 }

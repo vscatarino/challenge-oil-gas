@@ -6,6 +6,7 @@ import { container } from './inversify';
 import multer from 'multer';
 import csv from 'csv-parser';
 import fs from 'fs';
+import { Period, PeriodType } from './model/Period';
 
 
 // Create an Express application
@@ -23,25 +24,16 @@ app.get('/', (req, res) => {
     res.send('Hello, TypeScript + Node.js + Express!');
 });
 
-app.get('/equipments', (req, res) => {
-    //deve devolver os equipments, de acordo com os filtros
-    res.send('Hello, TypeScript + Node.js + Express!');
-});
-
-app.post('/equipments', async (req: Request, res) => {
-    // deve salvar os equipments no banco 
-    const { equipmentId, timestamp, value } = req.body;
-    const equipment: Equipment = {
-        equipmentId,
-        timestamp,
-        value
+app.get('/equipments', async (req: Request, res: Response) => {
+    let { period } = req.query
+    if (typeof period === 'string' && period.toUpperCase() in Period) {
+        period = period.toUpperCase()
+        const equipmentService = container.getEquipmentService()
+        const resp = await (await equipmentService).findEquipmentsByPeriod(period as PeriodType)
+        // console.log("Resp", resp)
+        return res.status(200).json(resp);
     }
-    console.log("EQUIPMENT: ", equipment)
-    const equipmentService = container.getEquipmentService()
-    const resp = await (await equipmentService).create(equipment)
-    console.log("RESP TO USER: ", resp)
-    res.setHeader('Content-Type', 'application/json; charset=utf-8')
-    res.status(201).json(resp)
+    return res.status(400).send('Invalid period parameter.');
 });
 
 app.post('/equipments', async (req: Request, res: Response) => {
@@ -49,7 +41,7 @@ app.post('/equipments', async (req: Request, res: Response) => {
     const { equipmentId, timestamp, value } = req.body;
     const equipment: Equipment = {
         equipmentId,
-        timestamp,
+        timestamp: new Date(timestamp),
         value
     }
     console.log("EQUIPMENT: ", equipment)
@@ -58,7 +50,7 @@ app.post('/equipments', async (req: Request, res: Response) => {
     console.log("RESP TO USER: ", resp)
     res.setHeader('Content-Type', 'application/json; charset=utf-8')
     res.status(201)
-    res.send(toJSON(resp))
+    res.status(201).json(resp)
 });
 
 app.post('/equipments/csv', upload.single('csvFile'), async (req: any, res: Response) => {

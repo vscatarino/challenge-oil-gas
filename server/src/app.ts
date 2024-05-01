@@ -3,6 +3,7 @@ import express, { Request } from 'express';
 
 import { Equipment } from './model/Equipment';
 import { container } from './inversify';
+import { STATUS_CODES } from 'http';
 
 // Create an Express application
 const app = express();
@@ -33,8 +34,11 @@ app.post('/equipments', async (req: Request, res) => {
     }
     console.log("EQUIPMENT: ", equipment)
     const equipmentService = container.getEquipmentService()
-    equipmentService.create(equipment)
-    res.send({ ok: true })
+    const resp = await (await equipmentService).create(equipment)
+    console.log("RESP TO USER: ", resp)
+    res.setHeader('Content-Type', 'application/json; charset=utf-8')
+    res.status(201)
+    res.send(toJSON(resp))
 });
 
 // Start the server and listen on the specified port
@@ -42,3 +46,18 @@ app.listen(port, () => {
     // Log a message when the server is successfully running
     console.log(`Server is running on http://localhost:${port}`);
 });
+
+function toJSON(obj: object) {
+    const json = JSON.stringify(obj, (_key, value) => {
+        if (typeof value === 'bigint') {
+            return value.toString()
+        } else if (typeof value === 'object' && value instanceof Map) {
+            return Object.fromEntries(value)
+        } else if (typeof value === 'object' && value instanceof Set) {
+            return [...value]
+        } else {
+            return value
+        }
+    })
+    return json
+}

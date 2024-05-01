@@ -1,11 +1,16 @@
 import { Equipment } from "../model/Equipment";
+import { EquipmentRepository } from "../repository/EquipmentRepository";
 
 export default class EquipmentService {
-    constructor() {
-
+    private equipmentRepository: EquipmentRepository
+    constructor(equipmentRepository: EquipmentRepository) {
+        this.equipmentRepository = equipmentRepository
     }
 
-    create(equipment: Equipment) {
+    async create(equipment: Equipment) {
         console.log("criando o Equipamento: ", equipment)
+        const device: Equipment = await this.equipmentRepository.create(equipment)
+        console.log("equioamento criado: ", device)
+        return device
     }
 }

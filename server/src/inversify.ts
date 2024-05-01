@@ -6,6 +6,7 @@ import { EquipmentRepository } from "./repository/EquipmentRepository";
 class Container {
     private client?: MongoClient
     private equipmentRepository?: EquipmentRepository
+    private equipmentService?: EquipmentService
 
     async getClientDb() {
         if (!this.client) {
@@ -17,7 +18,7 @@ class Container {
 
     async getEquipmentRepository() {
         if (!this.client) {
-            throw new Error("mongo client is not found")
+            this.client = await this.getClientDb()
         }
         if (!this.equipmentRepository) {
             this.equipmentRepository = new EquipmentRepository(this.client)
@@ -26,8 +27,15 @@ class Container {
         return this.equipmentRepository
     }
 
-    getEquipmentService() {
-        return new EquipmentService()
+    async getEquipmentService() {
+        if (!this.equipmentRepository) {
+            this.equipmentRepository = await this.getEquipmentRepository()
+        }
+
+        if (!this.equipmentService) {
+            this.equipmentService = new EquipmentService(this.equipmentRepository)
+        }
+        return this.equipmentService
     }
 }
 

@@ -41,8 +41,7 @@ app.post('/equipments', async (req: Request, res) => {
     const resp = await (await equipmentService).create(equipment)
     console.log("RESP TO USER: ", resp)
     res.setHeader('Content-Type', 'application/json; charset=utf-8')
-    res.status(201)
-    res.send(toJSON(resp))
+    res.status(201).json(resp)
 });
 
 app.post('/equipments', async (req: Request, res: Response) => {
@@ -83,7 +82,7 @@ app.post('/equipments/csv', upload.single('csvFile'), async (req: any, res: Resp
             const equipmentService = container.getEquipmentService()
             const resp = await (await equipmentService).createMany(results)
             res.setHeader('Content-Type', 'application/json; charset=utf-8')
-            res.status(201).json({ message: 'Arquivo csv enviado e processado com sucesso', data: resp })
+            res.status(201).json(resp)
         })
 });
 
@@ -92,18 +91,3 @@ app.listen(port, () => {
     // Log a message when the server is successfully running
     console.log(`Server is running on http://localhost:${port}`);
 });
-
-function toJSON(obj: object) {
-    const json = JSON.stringify(obj, (_key, value) => {
-        if (typeof value === 'bigint') {
-            return value.toString()
-        } else if (typeof value === 'object' && value instanceof Map) {
-            return Object.fromEntries(value)
-        } else if (typeof value === 'object' && value instanceof Set) {
-            return [...value]
-        } else {
-            return value
-        }
-    })
-    return json
-}

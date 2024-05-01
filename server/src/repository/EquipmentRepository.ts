@@ -19,4 +19,15 @@ export class EquipmentRepository {
         await collection.insertOne(equipment)
         return equipment
     }
+
+    async createMany(equipments: Equipment[]) {
+        const collection = await this.getCollection()
+        const equipmentList = equipments.map(equipment => {
+            equipment.id = randomUUID()
+            return equipment
+        })
+
+        await collection.insertMany(equipmentList)
+        return equipmentList
+    }
 }

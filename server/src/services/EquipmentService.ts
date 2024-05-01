@@ -13,4 +13,11 @@ export default class EquipmentService {
         console.log("equioamento criado: ", device)
         return device
     }
+
+    async createMany(equipments: Equipment[]){
+        console.log("criando o Equipamentos: ", equipments)
+        const devices: Equipment[] = await this.equipmentRepository.createMany(equipments)
+        console.log("Equipamentos criados: ", devices)
+        return devices
+    }
 }

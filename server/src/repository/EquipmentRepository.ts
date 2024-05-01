@@ -32,9 +32,31 @@ export class EquipmentRepository {
     }
 
     async findEquipamentsByPeriod(dateISO: string) {
+        let pipeline = [
+            {
+                $match: {
+                    "timestamp": { $gte: new Date(dateISO) }
+                }
+            },
+            {
+                $addFields: {
+                    "value": { $convert: { input: "$value", to: "double", onError: 0 } }
+                }
+            },
+            {
+                $group: {
+                    _id: "$equipmentId",
+                    media: { $avg: "$value" }
+                }
+            }
+        ]
+
         const collection = await this.getCollection()
-        const list = await collection.find({ timestamp: { $gte: new Date(dateISO) } }).toArray()
+        const list = await collection.aggregate(pipeline).toArray()
         console.log("List: ", list)
         return list
+
+        // const list = await collection.find({ timestamp: { $gte: new Date(dateISO) } }).toArray()
+        // return list
     }
 }

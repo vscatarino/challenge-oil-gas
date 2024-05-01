@@ -4,7 +4,7 @@ let client: MongoClient
 
 async function initializeMongoClient() {
     console.debug('Conectando com o mongo...')
-    const uri = "mongodb://localhost:27017"
+    const uri = "mongodb://localhost:27017/equipment-api"
     client = new MongoClient(uri, { minPoolSize: 3 })
     await client.connect()
     console.debug('mongo conectado.')

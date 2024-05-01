@@ -4,3 +4,5 @@ services:
         image: mongo
         ports:
             - "27017:27017"
+        volumes:
+            - ./fixture/init.js:/docker-entrypoint-initdb.d/init.js

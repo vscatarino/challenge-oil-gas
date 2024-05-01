@@ -67,6 +67,7 @@ app.post('/equipments/csv', upload.single('csvFile'), async (req: any, res: Resp
     fs.createReadStream(req.file.path)
         .pipe(csv())
         .on('data', (data: Equipment) => {
+            data.timestamp = new Date(data.timestamp)
             results.push(data)
         })
         .on('end', async () => {

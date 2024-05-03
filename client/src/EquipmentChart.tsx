@@ -1,22 +1,23 @@
 import Chart from 'react-apexcharts';
-import { Card, CardContent, Box, Typography } from '@mui/material';
+import { Card, CardContent, Box, Typography, FormControlLabel, Radio } from '@mui/material';
 import { ApexOptions } from 'apexcharts';
+import { useLoaderData, useNavigate } from "react-router-dom";
+import { useState } from 'react';
 
-
-// import PageContainer from '../../components/container/PageContainer';
-// import Breadcrumb from '../../layouts/full-layout/breadcrumb/Breadcrumb';
-
-// const BCrumb = [
-//   {
-//     to: '/',
-//     title: 'Home',
-//   },
-//   {
-//     title: 'Column Chart',
-//   },
-// ];
 
 const EquipmentChart = () => {
+
+    const data: any = useLoaderData()
+    const equipments: string[] = data.equipments
+    const equipmentsMedia: number[] = data.avgList
+    const navigate: any = useNavigate()
+    const [period, setPeriod] = useState("one_day")
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const period = event.target.value
+        setPeriod(period);
+        navigate(`/chart/${period}`)
+    };
     const optionscolumnchart: ApexOptions = {
         chart: {
             id: 'column-chart',
@@ -26,11 +27,10 @@ const EquipmentChart = () => {
                 show: false,
             },
         },
-        colors: ['#6ac3fd', '#0b70fb', '#f64e60'],
+        colors: ['#6ac3fd'],
         plotOptions: {
             bar: {
                 horizontal: false,
-                // endingShape: 'rounded',
                 columnWidth: '20%',
             },
         },
@@ -43,7 +43,7 @@ const EquipmentChart = () => {
             colors: ['transparent'],
         },
         xaxis: {
-            categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+            categories: equipments,
         },
         yaxis: {
             title: {
@@ -56,7 +56,7 @@ const EquipmentChart = () => {
         tooltip: {
             y: {
                 formatter(val: any) {
-                    return `$ ${val} thousands`;
+                    return `${val}`;
                 },
             },
             theme: 'dark',
@@ -72,41 +72,79 @@ const EquipmentChart = () => {
     };
     const seriescolumnchart = [
         {
-            name: 'Desktop',
-            data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
-        },
-        {
-            name: 'Mobile',
-            data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
-        },
-        {
-            name: 'Other',
-            data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
-        },
+            name: 'AVG',
+            data: equipmentsMedia,
+        }
     ];
 
     return (
-        <>
-            {/* // <PageContainer title="Column Chart" description="this is innerpage"> */}
-            {/* breadcrumb */}
-            {/* <Breadcrumb title="Column Chart" items={BCrumb} /> */}
-            {/* end breadcrumb */}
-            <Card>
-                <Box p={2} display="flex" alignItems="center">
-                    <Box flexGrow={1}>
-                        <Typography variant="h4">Equipments AVG</Typography>
-                    </Box>
+        <Box>
+            <Box p={2} display="flex" alignItems="center">
+                <Box flexGrow={1}>
+                    <Typography variant="h4">Equipments AVG</Typography>
                 </Box>
-                <CardContent>
-                    <Chart
-                        options={optionscolumnchart}
-                        series={seriescolumnchart}
-                        type="bar"
-                        height="300px"
-                    />
-                </CardContent>
-            </Card>
-        </>
+            </Box>
+            <CardContent>
+                <Chart
+                    options={optionscolumnchart}
+                    series={seriescolumnchart}
+                    type="bar"
+                    height="300px"
+                />
+            </CardContent>
+            <Box
+                sx={{
+                    textAlign: 'center',
+                }}
+            >
+                <FormControlLabel
+                    value="one_day"
+                    control={
+                        <Radio
+                            color="primary"
+                            checked={period === "one_day"}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e)} />
+                    }
+                    label="24 hours"
+                    labelPlacement="end"
+
+                />
+                <FormControlLabel
+                    value="two_day"
+                    control={
+                        <Radio
+                            color="primary"
+                            checked={period === "two_day"}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e)} />
+                    }
+                    label="48 hours"
+                    labelPlacement="end"
+                />
+                <FormControlLabel
+                    value="one_week"
+                    control={
+                        <Radio
+                            color="primary"
+                            checked={period === "one_week"}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e)} />
+                    }
+                    label="last week"
+                    labelPlacement="end"
+                />
+                <FormControlLabel
+                    value="one_month"
+                    control={
+                        <Radio
+                            color="primary"
+                            checked={period === "one_month"}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e)} />
+                    }
+                    label="last month"
+                    labelPlacement="end"
+                />
+
+            </Box>
+        </Box>
     );
 };
 

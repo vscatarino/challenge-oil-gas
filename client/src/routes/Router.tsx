@@ -1,13 +1,17 @@
 import EquipmentChart from "../EquipmentChart";
+import { RouteObject } from "react-router-dom"
+import { equipmentLoader } from "./loaders/EquipmentsLoader";
 
 const Router: RouteObject[] = [
     {
         path: "/",
-        element: <EquipmentChart />
+        element: <div>Hello</div>
     },
     {
-        path: "/chart",
-        element: <EquipmentChart />
+        path: "/chart/:period",
+        element: <EquipmentChart />,
+        loader: equipmentLoader
+
     }
 ]
 

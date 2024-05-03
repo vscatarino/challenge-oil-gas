@@ -14,6 +14,18 @@ const port = 8080;
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+    // Permitir acesso a partir de qualquer origem
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    // Permitir os métodos HTTP que serão utilizados
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    // Permitir os cabeçalhos personalizados que serão enviados na requisição
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    // Permitir o uso de credenciais (cookies, tokens, etc)
+    res.setHeader('Access-Control-Allow-Credentials', "true");
+    next();
+});
+
 app.get('/equipments', async (req: Request, res: Response) => {
     let { period } = req.query
     if (typeof period === 'string' && period.toUpperCase() in Period) {

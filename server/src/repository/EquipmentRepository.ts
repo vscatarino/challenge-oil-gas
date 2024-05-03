@@ -47,7 +47,7 @@ export class EquipmentRepository {
             {
                 $group: {
                     _id: "$equipmentId",
-                    media: { $round: [{ $avg: "$value" }, 2] }
+                    media: { $avg: "$value" }
                 }
             }
         ]
